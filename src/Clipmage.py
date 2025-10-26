@@ -3,6 +3,7 @@ import sys
 import threading
 import time
 import tkinter as tk
+from pathlib import Path
 
 import keyboard
 import pyautogui
@@ -19,41 +20,48 @@ class OCRApp:
         self.theme = "dark"
         self.setup_tesseract()
 
+
     def setup_tesseract(self):
         try:
+            appdata_tesseract = os.path.join(os.getenv('LOCALAPPDATA'), 'Clipmage', 'tesseract')
+            tesseract_exe = os.path.join(appdata_tesseract, 'tesseract.exe')
+            
+            if os.path.exists(tesseract_exe):
+                try:
+                    pytesseract.pytesseract.tesseract_cmd = tesseract_exe
+                    pytesseract.get_tesseract_version()
+                    return True
+                except:
+                    import shutil
+                    shutil.rmtree(appdata_tesseract, ignore_errors=True)
+            
             if getattr(sys, 'frozen', False):
-                base_path = sys._MEIPASS
+                if hasattr(sys, '_MEIPASS'):
+                    source = os.path.join(sys._MEIPASS, 'resources', 'tesseract_portable')
+                else:
+                    source = os.path.join(os.path.dirname(sys.executable), 'resources', 'tesseract_portable')
             else:
                 base_path = os.path.dirname(os.path.abspath(__file__))
-
-            tesseract_path = os.path.join(base_path, '..', 'resources', 'tesseract_portable', 'tesseract.exe')
-
-            if os.path.exists(tesseract_path):
-                pytesseract.pytesseract.tesseract_cmd = tesseract_path
-                return True
-            else:
-                install_path = os.path.join(os.path.dirname(sys.executable), 'tesseract_portable', 'tesseract.exe')
-                if os.path.exists(install_path):
-                    pytesseract.pytesseract.tesseract_cmd = install_path
-                    return True
-
-                system_paths = [
-                    r'C:\Program Files\Tesseract-OCR\tesseract.exe',
-                    r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
-                    'tesseract'
-                ]
-                for path in system_paths:
-                    try:
-                        pytesseract.pytesseract.tesseract_cmd = path
-                        pytesseract.get_tesseract_version()
-                        return True
-                    except:
-                        continue
-
-                raise Exception("Tesseract not found")
-
+                source = os.path.join(os.path.dirname(base_path), 'resources', 'tesseract_portable')
+            
+            if not os.path.exists(source):
+                raise FileNotFoundError(f"Tesseract no encontrado en: {source}")
+            
+            import shutil
+            os.makedirs(os.path.dirname(appdata_tesseract), exist_ok=True)
+            
+            self.custom_toast("Configuración inicial", "Instalando OCR... (solo primera vez)", 3000, toast_type="info")
+            shutil.copytree(source, appdata_tesseract, dirs_exist_ok=True)
+            
+            if not os.path.exists(tesseract_exe):
+                raise FileNotFoundError(f"Error copiando tesseract.exe")
+            
+            pytesseract.pytesseract.tesseract_cmd = tesseract_exe
+            version = pytesseract.get_tesseract_version()
+            return True
+        
         except Exception as e:
-            self.custom_toast("Critical Error", "Tesseract OCR not found", 5000, toast_type="error")
+            self.custom_toast("Critical Error", f"Tesseract error: {str(e)[:30]}", 5000, toast_type="error")
             return False
 
     def custom_toast(self, title, message, duration=2000, toast_type="info"):
