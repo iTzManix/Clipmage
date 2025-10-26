@@ -1,0 +1,34 @@
+# -*- coding: utf-8 -*-
+
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+      StringTable(
+        '040904B0',
+        [
+        StringStruct('CompanyName',      'iTzManix'),
+        StringStruct('FileDescription',  'Clipmage – OCR fast screenshot and copy'),
+        StringStruct('FileVersion',      '1.0.0.0'),
+        StringStruct('InternalName',     'Clipmage'),
+        StringStruct('LegalCopyright',   '© 2025 Edwin Alvaro - MIT Licence; third-party components under their respective licences'),
+        StringStruct('OriginalFilename', 'Clipmage.exe'),
+        StringStruct('ProductName',      'Clipmage'),
+        StringStruct('ProductVersion',   '1.0.0.0')
+        ]
+      )
+      ]
+    ),
+    VarFileInfo([VarStruct('Translation', [0x0409, 1200])])  # inglés-US, Unicode
+  ]
+)

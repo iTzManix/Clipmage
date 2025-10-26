@@ -65,7 +65,7 @@ class OCRApp:
             toast.overrideredirect(True)
             toast.attributes("-topmost", True)
             toast.attributes("-alpha", 0.0)
-            toast.configure(bg="#F5E8C7" if self.theme == "light" else "#2A2A2A", highlightthickness=0)
+            toast.configure(bg="#F5E8C7" if self.theme == "light" else "#363636", highlightthickness=0)
 
             screen_width = toast.winfo_screenwidth()
             screen_height = toast.winfo_screenheight()
@@ -289,7 +289,7 @@ class RegionSelector:
         bg_width, bg_height = 480, 60
         bg_x, bg_y = (screen_width - bg_width) // 2, 30
         self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + bg_height, fill="#F5E8C7" if self.theme == "light" else "#2A2A2A", outline="")
-        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + 3, fill="#4CAF50" if self.theme == "light" else "#81C784", outline="")
+        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + 3, fill="#4CAF59" if self.theme == "light" else "#81C784", outline="")
         self.canvas.create_text(screen_width // 2, bg_y + 30, text="Drag to select text region  •  ESC to cancel", font=("Segoe UI", 16, "bold"), fill="#2E7D32" if self.theme == "light" else "#E8F5E9")
 
         self.canvas.bind("<ButtonPress-1>", self.on_button_press)
@@ -303,16 +303,16 @@ class RegionSelector:
         
         self.selection_box_outer = self.canvas.create_rectangle(
             event.x, event.y, event.x, event.y,
-            outline='#4CAF50' if self.theme == "light" else '#81C784',
-            width=2,
-            dash=(4, 4)
+            outline="#6082F0" if self.theme == "light" else "#86FCD5",
+            width=1,
+            dash=(2, 2)
         )
         
         self.selection_box_inner = self.canvas.create_rectangle(
             event.x + 2, event.y + 2, event.x + 2, event.y + 2,
-            outline='#4CAF50' if self.theme == "light" else '#81C784',
-            width=2,
-            dash=(4, 4)
+            outline="#4CA3AF" if self.theme == "light" else "#86FCD5",
+            width=1,
+            dash=(2, 2)
         )
 
     def on_move_press(self, event):
