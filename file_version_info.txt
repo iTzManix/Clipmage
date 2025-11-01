@@ -18,17 +18,18 @@ VSVersionInfo(
         '040904B0',
         [
         StringStruct('CompanyName',      'iTzManix'),
-        StringStruct('FileDescription',  'Clipmage – OCR fast screenshot and copy'),
+        StringStruct('FileDescription',  'Clipmage - Fast OCR Screenshot Tool'),
         StringStruct('FileVersion',      '1.0.0.0'),
         StringStruct('InternalName',     'Clipmage'),
-        StringStruct('LegalCopyright',   '© 2025 Edwin Alvaro - MIT Licence; third-party components under their respective licences'),
+        StringStruct('LegalCopyright',   'Copyright © 2025 Edwin Alvaro. Licensed under MIT License.'),
         StringStruct('OriginalFilename', 'Clipmage.exe'),
-        StringStruct('ProductName',      'Clipmage'),
-        StringStruct('ProductVersion',   '1.0.0.0')
+        StringStruct('ProductName',      'Clipmage OCR'),
+        StringStruct('ProductVersion',   '1.0.0.0'),
+        StringStruct('Comments',         'Safe OCR tool for text extraction from screenshots')
         ]
       )
       ]
     ),
-    VarFileInfo([VarStruct('Translation', [0x0409, 1200])])  # inglés-US, Unicode
+    VarFileInfo([VarStruct('Translation', [0x0409, 1200])])
   ]
 )

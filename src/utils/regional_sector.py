@@ -8,6 +8,8 @@ class RegionSelector:
         self.region = None
         self.cancelled = False
         self.theme = theme
+        self.selection_box_outer = None
+        self.selection_box_inner = None
 
     def create_overlay(self):
         self.root = tk.Tk()
@@ -25,11 +27,19 @@ class RegionSelector:
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         screen_width = self.root.winfo_screenwidth()
-        bg_width, bg_height = 480, 60
-        bg_x, bg_y = (screen_width - bg_width) // 2, 30
-        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + bg_height, fill="#F5E8C7" if self.theme == "light" else "#2A2A2A", outline="")
-        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + 3, fill="#4CAF50" if self.theme == "light" else "#81C784", outline="")
-        self.canvas.create_text(screen_width // 2, bg_y + 30, text="Drag to select text region  •  ESC to cancel", font=("Segoe UI", 16, "bold"), fill="#2E7D32" if self.theme == "light" else "#E8F5E9")
+        screen_height = self.root.winfo_screenheight()
+        
+        bg_width, bg_height = screen_width, 90
+        bg_x, bg_y = 0, 0
+        
+        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + bg_height, 
+                                    fill="#68EDFF" if self.theme == "light" else "#2A2A2A", outline="")
+        self.canvas.create_rectangle(bg_x, bg_y, bg_x + bg_width, bg_y + 3, 
+                                    fill="#77F17B" if self.theme == "light" else "#81C784", outline="")
+        self.canvas.create_text(screen_width // 2, bg_y + 30, 
+                               text="Drag to select text region  •  ESC to cancel", 
+                               font=("Segoe UI", 16, "bold"), 
+                               fill="#2E7D32" if self.theme == "light" else "#E8F5E9")
 
         self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<B1-Motion>", self.on_move_press)
@@ -42,54 +52,64 @@ class RegionSelector:
         
         self.selection_box_outer = self.canvas.create_rectangle(
             event.x, event.y, event.x, event.y,
-            outline='#4CAF50' if self.theme == "light" else '#81C784',
+            outline="#FFFFFF" if self.theme == "light" else "#FFFFFF",
             width=2,
-            dash=(4, 4)
+            dash=(6, 3)
         )
         
         self.selection_box_inner = self.canvas.create_rectangle(
-            event.x + 2, event.y + 2, event.x + 2, event.y + 2,
-            outline='#4CAF50' if self.theme == "light" else '#81C784',
-            width=2,
-            dash=(4, 4)
+            event.x + 3, event.y + 3, event.x + 3, event.y + 3,
+            outline='#1976D2' if self.theme == "light" else '#FFFFFF',
+            width=1,
+            dash=(6, 3)
         )
 
     def on_move_press(self, event):
+        if self.start_x is None or self.start_y is None:
+            return
+            
         x1 = self.start_x - self.root.winfo_rootx()
         y1 = self.start_y - self.root.winfo_rooty()
         
-        self.canvas.coords(self.selection_box_outer, x1, y1, event.x, event.y)
-        self.canvas.coords(self.selection_box_inner, x1 + 2, y1 + 2, event.x - 2, event.y - 2)
+        if self.selection_box_outer:
+            self.canvas.coords(self.selection_box_outer, x1, y1, event.x, event.y)
+        
+        if self.selection_box_inner:
+            self.canvas.coords(self.selection_box_inner, x1 + 3, y1 + 3, event.x - 3, event.y - 3)
 
     def on_button_release(self, event):
-        if self.cancelled:
+        if self.start_x is None or self.start_y is None:
             return
-
-        end_x = event.x_root
-        end_y = event.y_root
-
-        x1, y1 = self.start_x, self.start_y
-        x2, y2 = end_x, end_y
-
+            
+        x1 = self.start_x - self.root.winfo_rootx()
+        y1 = self.start_y - self.root.winfo_rooty()
+        x2 = event.x
+        y2 = event.y
+        
         if abs(x2 - x1) < 20 or abs(y2 - y1) < 20:
-            self.cancelled = True
-            self.root.quit()
             return
-
-        x = min(x1, x2)
-        y = min(y1, y2)
-        width = abs(x2 - x1)
-        height = abs(y2 - y1)
-
-        self.region = (x, y, width, height)
+        
+        x_min = min(x1, x2)
+        y_min = min(y1, y2)
+        x_max = max(x1, x2)
+        y_max = max(y1, y2)
+        
+        screen_x = self.root.winfo_rootx() + x_min
+        screen_y = self.root.winfo_rooty() + y_min
+        width = x_max - x_min
+        height = y_max - y_min
+        
+        self.region = (screen_x, screen_y, width, height)
         self.root.quit()
+        self.root.destroy()
 
     def cancel_selection(self, event=None):
         self.cancelled = True
+        self.region = None
         self.root.quit()
+        self.root.destroy()
 
     def get_region(self):
         self.create_overlay()
         self.root.mainloop()
-        self.root.destroy()
-        return None if self.cancelled else self.region
+        return self.region
